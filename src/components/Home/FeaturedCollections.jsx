@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const collections = [
   {
@@ -31,6 +32,15 @@ const collections = [
 ];
 
 const FeaturedCollections = () => {
+  const navigate = useNavigate();
+
+  const handleClick = (col) => {
+    if (col.title === "New Arrival") navigate("/collections");
+    else if (col.title === "Bridal Collection")
+      navigate("/collections/Bridal Sets");
+    else if (col.title === "Diamond Collection")
+      navigate("/collections/Necklaces");
+  };
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -58,6 +68,7 @@ const FeaturedCollections = () => {
         {collections.map((col) => (
           <div
             key={col.id}
+            onClick={() => handleClick(col)}
             style={{
               position: "relative",
               overflow: "hidden",

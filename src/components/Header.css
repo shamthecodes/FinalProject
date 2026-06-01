@@ -349,11 +349,12 @@
   }
 }
 /* Nav link with active underline */
+/* Active nav link */
 .nav-link {
   font-size: 0.78rem;
   font-weight: 500;
   color: #0d4d4d;
-  text-decoration: none;
+  text-decoration: none !important;
   letter-spacing: 1px;
   text-transform: uppercase;
   transition: all 0.2s;
@@ -364,11 +365,13 @@
 }
 
 .nav-link:hover {
-  color: #d4af37; /* gold on hover */
-  border-bottom: 2px solid #d4af37; /* gold underline on hover */
+  color: #d4af37;
+  border-bottom: 2px solid #d4af37;
 }
 
+/* Active — stays underlined on current page */
 .nav-link.active {
-  color: #0d4d4d;
-  border-bottom: 2px solid #0d4d4d; /* teal underline for active */
+  color: #0d4d4d !important;
+  border-bottom: 2px solid #0d4d4d !important;
+  font-weight: 600;
 }

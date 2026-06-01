@@ -42,10 +42,13 @@ const Footer = () => {
           borderBottom: "1px solid rgba(212,175,55,0.2)",
           padding: isMobile ? "32px 24px" : "40px 80px",
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",
+          // flexDirection: isMobile ? "column" : "row",
+
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "center",
+          textAlign: "center",
           gap: "24px",
+          flexDirection: "column",
         }}
       >
         <div>

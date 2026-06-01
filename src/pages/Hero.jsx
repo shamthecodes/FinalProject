@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import CategoryIcons from "@/components/Home/Category";
 import FeaturedCollections from "@/components/Home/FeaturedCollections";
 import TrustBadges from "@/components/Home/TrustBadges";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
   {
@@ -32,6 +33,7 @@ const slides = [
 const Hero = () => {
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const navigate = useNavigate();
 
   /* AUTO SLIDE */
   useEffect(() => {
@@ -254,6 +256,7 @@ const Hero = () => {
                   height: "auto",
                   width: isMobile ? "100%" : "fit-content",
                 }}
+                onClick={() => navigate("/collections")}
               >
                 EXPLORE COLLECTION →
               </Button>
@@ -271,6 +274,7 @@ const Hero = () => {
                   height: "auto",
                   width: isMobile ? "100%" : "fit-content",
                 }}
+                onClick={() => navigate("/collections/Bridal Sets")}
               >
                 VIEW BRIDAL
               </Button>

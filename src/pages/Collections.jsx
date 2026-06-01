@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useProducts } from "../hooks/useProducts";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import ProductGrid from "@/components/products/ProductGrid";
 
 const categories = [
@@ -14,7 +14,6 @@ const categories = [
   "Pendants",
   "Bridal Sets",
 ];
-const metals = ["All", "Gold", "Silver", "Platinum", "White Gold", "Rose Gold"];
 const sortOptions = [
   { label: "Newest First", value: "newest" },
   { label: "Price: Low to High", value: "price_low" },
@@ -23,14 +22,12 @@ const sortOptions = [
 
 const Collections = () => {
   const { category } = useParams();
+  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [showFilter, setShowFilter] = useState(false);
-  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
   const [filters, setFilters] = useState({
     category: category || "",
-    metal: "",
     sort: "newest",
-    search: "",
   });
 
   useEffect(() => {
@@ -40,18 +37,18 @@ const Collections = () => {
   }, []);
 
   useEffect(() => {
-    if (category) setFilters((prev) => ({ ...prev, category }));
+    setFilters((prev) => ({ ...prev, category: category || "" }));
   }, [category]);
 
   const { products, loading } = useProducts(filters);
 
-  const updateFilter = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const updateSort = (value) => {
+    setSort(value);
+    setFilters((prev) => ({ ...prev, sort: value }));
   };
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-    setTimeout(() => updateFilter("search", e.target.value), 500);
+  const updateCategory = (cat) => {
+    setFilters((prev) => ({ ...prev, category: cat === "All" ? "" : cat }));
   };
 
   return (
@@ -60,10 +57,24 @@ const Collections = () => {
       <div
         style={{
           backgroundColor: "#0d4d4d",
-          padding: isMobile ? "40px 24px" : "60px 80px",
+          padding: isMobile ? "40px 24px 32px" : "60px 80px 48px",
           textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <div
+          style={{
+            position: "absolute",
+            width: "300px",
+            height: "300px",
+            borderRadius: "50%",
+            border: "50px solid rgba(212,175,55,0.06)",
+            top: "-100px",
+            right: "-100px",
+          }}
+        />
+
         <span
           style={{
             fontSize: "0.65rem",
@@ -75,48 +86,76 @@ const Collections = () => {
         >
           Our Collection
         </span>
+
         <h1
           style={{
             fontSize: isMobile ? "2rem" : "3rem",
             fontWeight: "700",
             color: "white",
-            margin: "8px 0 16px",
+            margin: "8px 0 0",
             fontFamily: "Cormorant Garamond, serif",
           }}
         >
           {filters.category || "All Jewellery"}
         </h1>
 
-        {/* SEARCH BAR */}
+        {/* AI TRY-ON BANNER */}
         <div
+          onClick={() => navigate("/try-on")}
           style={{
-            display: "flex",
+            marginTop: "24px",
+            display: "inline-flex",
             alignItems: "center",
             gap: "12px",
-            maxWidth: "400px",
-            margin: "0 auto",
-            backgroundColor: "rgba(255,255,255,0.1)",
-            borderRadius: "4px",
-            padding: "10px 16px",
-            border: "1px solid rgba(255,255,255,0.2)",
+            backgroundColor: "rgba(212,175,55,0.15)",
+            border: "1px solid rgba(212,175,55,0.4)",
+            borderRadius: "8px",
+            padding: isMobile ? "10px 16px" : "12px 24px",
+            cursor: "pointer",
           }}
         >
-          <Search size={16} color="rgba(255,255,255,0.6)" />
-          <input
-            type="text"
-            placeholder="Search jewellery..."
-            value={search}
-            onChange={handleSearch}
-            style={{
-              backgroundColor: "transparent",
-              border: "none",
-              outline: "none",
-              color: "white",
-              fontSize: "0.85rem",
-              width: "100%",
-              fontFamily: "Montserrat, sans-serif",
-            }}
-          />
+          <Sparkles size={18} color="#d4af37" />
+          <div style={{ textAlign: "left" }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.75rem",
+                fontWeight: "700",
+                color: "#d4af37",
+                letterSpacing: "1px",
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              ✨ AI VIRTUAL TRY-ON
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.7rem",
+                color: "rgba(255,255,255,0.7)",
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              Upload your photo + jewellery → See realistic preview
+            </p>
+          </div>
+          {!isMobile && (
+            <div
+              style={{
+                backgroundColor: "#d4af37",
+                color: "#0d4d4d",
+                padding: "6px 14px",
+                borderRadius: "4px",
+                fontSize: "0.65rem",
+                fontWeight: "700",
+                letterSpacing: "1px",
+                fontFamily: "Montserrat, sans-serif",
+                whiteSpace: "nowrap",
+              }}
+            >
+              TRY NOW →
+            </div>
+          )}
         </div>
       </div>
 
@@ -126,16 +165,18 @@ const Collections = () => {
           backgroundColor: "white",
           padding: isMobile ? "0 16px" : "0 80px",
           display: "flex",
-          gap: "0",
           overflowX: "auto",
           scrollbarWidth: "none",
           borderBottom: "1px solid rgba(13,77,77,0.08)",
+          position: "sticky",
+          top: "0",
+          zIndex: 50,
         }}
       >
         {categories.map((cat) => (
           <button
             key={cat}
-            onClick={() => updateFilter("category", cat === "All" ? "" : cat)}
+            onClick={() => updateCategory(cat)}
             style={{
               padding: "16px 20px",
               border: "none",
@@ -164,298 +205,54 @@ const Collections = () => {
         ))}
       </div>
 
-      {/* CONTENT */}
-      <div
-        style={{
-          display: "flex",
-          gap: "32px",
-          padding: isMobile ? "24px 16px" : "40px 80px",
-        }}
-      >
-        {/* FILTER SIDEBAR — desktop only */}
-        {!isMobile && (
-          <div style={{ width: "220px", flexShrink: 0 }}>
-            <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "8px",
-                padding: "24px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                position: "sticky",
-                top: "100px",
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: "0.7rem",
-                  fontWeight: "700",
-                  color: "#0d4d4d",
-                  letterSpacing: "3px",
-                  textTransform: "uppercase",
-                  marginBottom: "24px",
-                  fontFamily: "Montserrat, sans-serif",
-                }}
-              >
-                FILTERS
-              </h3>
-
-              {/* Metal */}
-              <div style={{ marginBottom: "24px" }}>
-                <p
-                  style={{
-                    fontSize: "0.65rem",
-                    fontWeight: "700",
-                    color: "#0d4d4d",
-                    letterSpacing: "2px",
-                    textTransform: "uppercase",
-                    marginBottom: "12px",
-                    fontFamily: "Montserrat, sans-serif",
-                  }}
-                >
-                  Metal
-                </p>
-                {metals.map((metal) => (
-                  <div
-                    key={metal}
-                    onClick={() =>
-                      updateFilter("metal", metal === "All" ? "" : metal)
-                    }
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      backgroundColor:
-                        filters.metal === metal ||
-                        (metal === "All" && !filters.metal)
-                          ? "rgba(13,77,77,0.08)"
-                          : "transparent",
-                      color:
-                        filters.metal === metal ||
-                        (metal === "All" && !filters.metal)
-                          ? "#0d4d4d"
-                          : "#6b7280",
-                      fontSize: "0.82rem",
-                      fontFamily: "Montserrat, sans-serif",
-                      marginBottom: "2px",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    {metal}
-                  </div>
-                ))}
-              </div>
-
-              {/* Sort */}
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.65rem",
-                    fontWeight: "700",
-                    color: "#0d4d4d",
-                    letterSpacing: "2px",
-                    textTransform: "uppercase",
-                    marginBottom: "12px",
-                    fontFamily: "Montserrat, sans-serif",
-                  }}
-                >
-                  Sort By
-                </p>
-                {sortOptions.map((opt) => (
-                  <div
-                    key={opt.value}
-                    onClick={() => updateFilter("sort", opt.value)}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      backgroundColor:
-                        filters.sort === opt.value
-                          ? "rgba(13,77,77,0.08)"
-                          : "transparent",
-                      color: filters.sort === opt.value ? "#0d4d4d" : "#6b7280",
-                      fontSize: "0.82rem",
-                      fontFamily: "Montserrat, sans-serif",
-                      marginBottom: "2px",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    {opt.label}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PRODUCTS */}
-        <div style={{ flex: 1 }}>
-          {/* Top bar */}
-          <div
+      {/* PRODUCTS */}
+      <div style={{ padding: isMobile ? "24px 16px" : "40px 80px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "24px",
+            flexWrap: "wrap",
+            gap: "12px",
+          }}
+        >
+          <p
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "24px",
+              fontSize: "0.82rem",
+              color: "#6b7280",
+              fontFamily: "Montserrat, sans-serif",
+              margin: 0,
             }}
           >
-            <p
-              style={{
-                fontSize: "0.82rem",
-                color: "#6b7280",
-                fontFamily: "Montserrat, sans-serif",
-                margin: 0,
-              }}
-            >
-              {loading ? "Loading..." : `${products.length} products`}
-            </p>
+            {loading ? "Loading..." : `${products.length} products`}
+          </p>
 
-            {/* Mobile filter button */}
-            {isMobile && (
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {sortOptions.map((opt) => (
               <button
-                onClick={() => setShowFilter(!showFilter)}
+                key={opt.value}
+                onClick={() => updateSort(opt.value)}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 16px",
-                  backgroundColor: "#0d4d4d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
+                  padding: "7px 16px",
+                  borderRadius: "999px",
+                  border: `1px solid ${sort === opt.value ? "#0d4d4d" : "#e5e7eb"}`,
+                  backgroundColor: sort === opt.value ? "#0d4d4d" : "white",
+                  color: sort === opt.value ? "white" : "#6b7280",
                   fontSize: "0.72rem",
                   fontWeight: "600",
                   cursor: "pointer",
                   fontFamily: "Montserrat, sans-serif",
+                  transition: "all 0.2s",
                 }}
               >
-                <SlidersHorizontal size={14} />
-                FILTER
+                {opt.label}
               </button>
-            )}
+            ))}
           </div>
-
-          {/* Mobile filter dropdown */}
-          {isMobile && showFilter && (
-            <div
-              style={{
-                backgroundColor: "white",
-                borderRadius: "8px",
-                padding: "20px",
-                marginBottom: "20px",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "16px",
-                }}
-              >
-                <span
-                  style={{
-                    fontWeight: "700",
-                    color: "#0d4d4d",
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  Filters
-                </span>
-                <X
-                  size={16}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setShowFilter(false)}
-                />
-              </div>
-
-              <p
-                style={{
-                  fontSize: "0.65rem",
-                  fontWeight: "700",
-                  color: "#0d4d4d",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  marginBottom: "8px",
-                }}
-              >
-                Sort By
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "8px",
-                  marginBottom: "16px",
-                }}
-              >
-                {sortOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => updateFilter("sort", opt.value)}
-                    style={{
-                      padding: "6px 14px",
-                      borderRadius: "999px",
-                      border: `1px solid ${filters.sort === opt.value ? "#0d4d4d" : "#e5e7eb"}`,
-                      backgroundColor:
-                        filters.sort === opt.value ? "#0d4d4d" : "white",
-                      color: filters.sort === opt.value ? "white" : "#6b7280",
-                      fontSize: "0.72rem",
-                      cursor: "pointer",
-                      fontFamily: "Montserrat, sans-serif",
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-
-              <p
-                style={{
-                  fontSize: "0.65rem",
-                  fontWeight: "700",
-                  color: "#0d4d4d",
-                  letterSpacing: "2px",
-                  textTransform: "uppercase",
-                  marginBottom: "8px",
-                }}
-              >
-                Metal
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {metals.map((metal) => (
-                  <button
-                    key={metal}
-                    onClick={() =>
-                      updateFilter("metal", metal === "All" ? "" : metal)
-                    }
-                    style={{
-                      padding: "6px 14px",
-                      borderRadius: "999px",
-                      border: `1px solid ${filters.metal === metal || (metal === "All" && !filters.metal) ? "#0d4d4d" : "#e5e7eb"}`,
-                      backgroundColor:
-                        filters.metal === metal ||
-                        (metal === "All" && !filters.metal)
-                          ? "#0d4d4d"
-                          : "white",
-                      color:
-                        filters.metal === metal ||
-                        (metal === "All" && !filters.metal)
-                          ? "white"
-                          : "#6b7280",
-                      fontSize: "0.72rem",
-                      cursor: "pointer",
-                      fontFamily: "Montserrat, sans-serif",
-                    }}
-                  >
-                    {metal}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <ProductGrid products={products} loading={loading} />
         </div>
+
+        <ProductGrid products={products} loading={loading} />
       </div>
     </div>
   );

@@ -8,10 +8,17 @@ import "./App.css";
 import Hero from "./pages/Hero";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
 import Collections from "./pages/Collections";
 import ProductDetail from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
+import AITryOn from "./pages/AITryOn";
+import Wishlist from "./pages/Wishlist";
+import ProductDetails from "./pages/ProductDetails";
+import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
+import OrderConfirmed from "./pages/OrderConfirmed";
+import TrackOrder from "./pages/TrackOrder";
+import About from "./pages/About";
 
 // Syncs Clerk user to Supabase automatically
 const AppContent = () => {
@@ -25,20 +32,60 @@ const AppContent = () => {
         <Route path="/collections" element={<Collections />} />
         <Route path="/collections/:category" element={<Collections />} />
         <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/about" element={<div>About Page</div>} />
+        <Route path="/about" element={<About />} />
 
         {/* 🔑 AUTH — only for non-logged-in users */}
         <Route path="/login" element={<Login />} />
         <Route path="/login/*" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signup/*" element={<Signup />} />
-
+        <Route
+          path="/try-on"
+          element={
+            <ProtectedRoute>
+              <AITryOn />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
+            </ProtectedRoute>
+          }
+        />
         {/* 🔒 PROTECTED — must be logged in */}
         <Route
           path="/cart"
           element={
             <ProtectedRoute>
               <Cart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/try-on"
+          element={
+            <ProtectedRoute>
+              <AITryOn />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <Wishlist />
             </ProtectedRoute>
           }
         />
@@ -54,18 +101,11 @@ const AppContent = () => {
           path="/payment"
           element={
             <ProtectedRoute>
-              <div>Payment</div>
+              <Payment />
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/wishlist"
-          element={
-            <ProtectedRoute>
-              <div>Wishlist</div>
-            </ProtectedRoute>
-          }
-        />
+
         <Route
           path="/profile"
           element={
@@ -75,21 +115,30 @@ const AppContent = () => {
           }
         />
         <Route
-          path="/orders"
+          path="/order-confirmed"
           element={
             <ProtectedRoute>
-              <div>Orders</div>
+              <OrderConfirmed />
             </ProtectedRoute>
           }
         />
         <Route
+          path="/track-order/:orderId"
+          element={
+            <ProtectedRoute>
+              <TrackOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
-        />
+        /> */}
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
